@@ -18,6 +18,7 @@ namespace DirectoryWatcher
         private static void Watch()
         {
             string directory = @"\\ad001.siemens.net\dfs001\File\CI_GEN\Prototypen_IT\S7-CPs\Ind-Ethernet\CC7-CloudConnect\cc7";
+            //string directory = @"\\192.168.0.251\share\4Leon";
 
             using (FileSystemWatcher directoryWatcher = new FileSystemWatcher())
             {
@@ -43,7 +44,7 @@ namespace DirectoryWatcher
 
         private static void copyOperation(string source, string destDir = @"\\192.168.0.251\share\paste")
         {
-            Console.WriteLine("Search files in the folder...");
+            Console.WriteLine("Search .upd files in the folder...");
             string[] files = Directory.GetFiles(source, "*.upd", SearchOption.AllDirectories);
 
             foreach (var file in files)
@@ -52,20 +53,25 @@ namespace DirectoryWatcher
                 string fileName = Path.GetFileName(file);
                 string destFile = Path.Combine(destDir, fileName);
 
-                Console.WriteLine("Copying is started...");
-                File.Copy(file, destFile, true);
-
-                Console.WriteLine(file);
+                try
+                {
+                    Console.WriteLine("Copying is started...");
+                    File.Copy(file, destFile, true);
+                    Console.WriteLine($"The {file} is copied successfully");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("The problem is: ");
+                    Console.WriteLine(e);
+                }
             }
-
-
         }
 
         private static void watchChanged(object sender, FileSystemEventArgs e)
         {
             Console.WriteLine($"File Path: {e.FullPath} and Change Type: {e.ChangeType}");
             dirList.Add(e.FullPath);
-            Thread.Sleep(500);
+            Thread.Sleep(1000);
             copyOperation(dirList[0]);
 
         }
